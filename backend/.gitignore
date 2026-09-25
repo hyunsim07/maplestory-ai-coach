@@ -1,0 +1,8 @@
+# Virtual environment (recreate with: py -3.13 -m venv .venv)
+.venv/
+
+# Python cache files
+__pycache__/
+
+# Secrets (API keys) — never commit
+.env

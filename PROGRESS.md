@@ -69,7 +69,35 @@ maplestory-ai-coach/
 │   ├── public/        ← static files (images)
 │   ├── tsconfig.json  ← TypeScript settings (defines the @/ alias)
 │   └── package.json   ← dependencies + scripts (npm run dev)
-└── backend/           ← FastAPI (later milestone, not created yet)
+└── backend/           ← FastAPI (Python 3.13)
+    ├── .venv/         ← virtual environment (not committed; like node_modules)
+    ├── .gitignore     ← ignores .venv, __pycache__, .env
+    ├── main.py        ← the FastAPI app and its endpoints
+    └── requirements.txt ← exact package versions (pip freeze)
+```
+
+## How to Start the App
+
+```powershell
+# Frontend (terminal 1)
+cd frontend
+npm run dev                      # → http://localhost:3000
+
+# Backend (terminal 2)
+cd backend
+.\.venv\Scripts\Activate.ps1     # prompt should show (.venv)
+uvicorn main:app --reload        # → http://localhost:8000  (docs: /docs)
+
+# Stop a server: Ctrl+C   |   leave the venv: deactivate (or close the terminal)
+```
+
+First-time backend setup on a new machine:
+
+```powershell
+cd backend
+py -3.13 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 ```
 
 ---
@@ -87,6 +115,8 @@ maplestory-ai-coach/
 | Font | Noto Sans KR via `next/font/google` | Clean, round, readable Korean font close to the reference; self-hosted by Next.js |
 | Icons | Emoji for now | Zero setup; later switch to image assets (MapleStory-style) or an icon library (a decision to make together) |
 | Theme colors | `maple-cream`, `maple-orange`, `maple-blue`, `maple-ink` in `@theme` | One place to tune the palette; names describe their role |
+| Game data source (Milestone 2) | Korean MapleStory (KMS) via Nexon Open API | Most complete official API (character, stats, equipment, Union, HEXA); matches the Korean UI and terms. GMS has no comparable official API. Confirm endpoints and rate limits when getting the API key |
+| Python version (Milestone 2) | Install a current Python (3.12/3.13) alongside 3.9 | 3.9 is end-of-life (Oct 2025); current FastAPI may not support it |
 
 ---
 
