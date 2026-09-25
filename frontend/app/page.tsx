@@ -13,20 +13,20 @@ export default function Home() {
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex flex-1 flex-col gap-6 p-6">
+        <main className="flex min-w-0 flex-1 flex-col gap-6 p-6">
           <CharacterSearch />
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="flex flex-col gap-6">
-              <CharacterInfoCard />
+            <CharacterInfoCard />
+            <AIAnalysisCard />
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="grid grid-rows-[auto_1fr] gap-6">
               <EquipmentPreviewCard />
               <WhatIfCard />
             </div>
-
-            <div className="flex flex-col gap-6">
-              <AIAnalysisCard />
-              <AICoachCard />
-            </div>
+            <AICoachCard />
           </div>
         </main>
       </div>

@@ -2,6 +2,7 @@
 
 @theme {
   --color-maple-cream: #fff8ec;
+  --color-maple-sky: #bfe6ff;
   --color-maple-orange: #ff9a3c;
   --color-maple-blue: #3d7bff;
   --color-maple-ink: #3b3030;
@@ -9,5 +10,12 @@
 
 body {
   background-color: var(--color-maple-cream);
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-maple-sky) 0,
+    #e3f4ff 320px,
+    var(--color-maple-cream) 720px
+  );
+  background-repeat: no-repeat;
   color: var(--color-maple-ink);
 }

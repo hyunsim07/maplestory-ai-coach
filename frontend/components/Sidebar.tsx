@@ -18,10 +18,12 @@ const navItems: NavItem[] = [
 
 const activeLabel = "대시보드";
 
+const upcomingUpdates: string[] = ["길드 분석", "주간 리포트", "이벤트 추천"];
+
 export default function Sidebar() {
   return (
-    <aside className="hidden w-60 p-6 pr-0 md:block">
-      <nav className="rounded-2xl bg-white p-3 shadow-md">
+    <aside className="hidden w-64 shrink-0 flex-col gap-5 p-6 pr-0 md:flex">
+      <nav className="rounded-3xl bg-white p-3 shadow-md">
         <ul className="flex flex-col gap-1">
           {navItems.map((item) => (
             <li
@@ -32,12 +34,35 @@ export default function Sidebar() {
                   : "hover:bg-maple-cream"
               }`}
             >
-              <span>{item.icon}</span>
+              <span className="text-lg">{item.icon}</span>
               <span>{item.label}</span>
             </li>
           ))}
         </ul>
       </nav>
+
+      <div className="flex items-end gap-2 px-1">
+        <span className="text-5xl">🍄</span>
+        <p className="rounded-2xl rounded-bl-none bg-white px-3 py-2 text-xs leading-relaxed shadow-sm">
+          더 똑똑한
+          <br />
+          메이플 라이프를
+          <br />
+          함께해요!
+        </p>
+      </div>
+
+      <div className="rounded-3xl bg-white p-4 shadow-md">
+        <p className="text-sm font-bold text-green-700">업데이트 예정</p>
+        <ul className="mt-2 flex flex-col gap-1.5 text-sm text-gray-600">
+          {upcomingUpdates.map((update) => (
+            <li key={update} className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-full border-2 border-green-500" />
+              <span>{update}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </aside>
   );
 }

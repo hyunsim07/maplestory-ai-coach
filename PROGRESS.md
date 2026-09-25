@@ -7,7 +7,7 @@ Update this at the end of every layer.
 
 ## Current Status
 
-**Milestone 1: Frontend visual skeleton** (in progress)
+**Milestone 1: Frontend visual skeleton** ✅ Complete
 
 | Layer | Topic | Status |
 |---|---|---|
@@ -20,22 +20,22 @@ Update this at the end of every layer.
 | 6 | `Card` component + empty 캐릭터 정보 / AI 분석 cards (props, children, conditional rendering) | ✅ Done |
 | 7 | Remaining empty cards (장비, What-if, AI 코치) | ✅ Done |
 | 8 | Basic Tailwind styling (pastel, rounded, shadows) | ✅ Done |
-| 9 | Responsive 2-column grid | 🔄 Grid done; sidebar-hiding exercise pending |
+| 9 | Responsive 2-column grid + sidebar hidden on phones | ✅ Done |
 
 Milestone 1 rules: **no** Nexon API, FastAPI, database, LLM, LangGraph, or RAG.
 
 **Milestone 1.5: Match the reference (empty state)** — chosen over going straight to the backend, because the reference screenshot *is* an empty state (all values `-`), so it can be built without data. Same rules as Milestone 1 (no API, no backend).
 
-| Layer | Topic | Key concepts |
-|---|---|---|
-| 1.5-1 | 캐릭터 정보: portrait placeholder, name/level row, 4 stat badges | `.map()` over objects, nested flex |
-| 1.5-2 | 캐릭터 정보: 6 tabs (기본 정보, 스탯, 장비, 유니온, 헥사, 보스 이력) | `useState` for the active tab, conditional classes |
-| 1.5-3 | 캐릭터 정보: 2-column info table (월드, 직업, HP, MP…) with `-` values | Grid, `<dl>`/`<dt>`/`<dd>` |
-| 1.5-4 | 주요 장비 미리보기: 9 colorful `+` slots, "전체 장비 보기" link | Generating repeated items, grid columns |
-| 1.5-5 | AI 성장 분석 + What-if: dashed empty-state boxes, "제공 예정 기능" list | A reusable `EmptyState` component, optional props |
-| 1.5-6 | AI 코치: subtitle, empty-state box, message input + send button | Controlled input again, Client Component |
-| 1.5-7 | Header nav pills + avatar; sidebar "업데이트 예정" box | Reusing patterns |
-| 1.5-8 | Art pass: background scenery, mascots, illustrated icons | `public/` folder, `next/image`, background images |
+| Layer | Topic | Key concepts | Status |
+|---|---|---|---|
+| 1.5-1 | 캐릭터 정보: portrait placeholder, name/level row, 4 stat badges | `.map()` over objects, nested flex | ✅ Done |
+| 1.5-2 | 캐릭터 정보: 6 tabs (기본 정보, 스탯, 장비, 유니온, 헥사, 보스 이력) | `useState` for the active tab, conditional classes | ✅ Done |
+| 1.5-3 | 캐릭터 정보: 2-column info table (월드, 직업, HP, MP…) with `-` values | Grid, `<dl>`/`<dt>`/`<dd>` | ✅ Done |
+| 1.5-4 | 주요 장비 미리보기: 9 colorful `+` slots, "전체 장비 보기" link | Generating repeated items, grid columns | ✅ Done |
+| 1.5-5 | AI 성장 분석 + What-if: dashed empty-state boxes, "제공 예정 기능" list | A reusable `EmptyState` component, optional props | ✅ Done |
+| 1.5-6 | AI 코치: subtitle, empty-state box, message input + send button | Controlled input again, Client Component | ✅ Done |
+| 1.5-7 | Header nav pills + avatar; sidebar "업데이트 예정" box | Reusing patterns | ✅ Done |
+| 1.5-8 | Art pass: background scenery, mascots, illustrated icons | `public/` folder, `next/image`, background images | ⏭️ Next (needs image files) |
 
 **Milestone 2 (after 1.5): Search a character, see real data** — mock `Character` type → lifting state up → FastAPI (`/health`, `/character/{name}`) → `fetch()` with loading/error states → Nexon API key in `.env` → real character data. Still no LLM.
 
@@ -58,8 +58,10 @@ maplestory-ai-coach/
 │   │   ├── Header.tsx
 │   │   ├── Sidebar.tsx
 │   │   ├── CharacterSearch.tsx  ← first Client Component
-│   │   ├── Card.tsx             ← reusable card frame (icon + title + children)
+│   │   ├── Card.tsx             ← reusable card frame (icon, title, optional subtitle + action, children)
+│   │   ├── EmptyState.tsx       ← dashed "캐릭터를 검색하면…" box
 │   │   ├── CharacterInfoCard.tsx
+│   │   ├── CharacterTabs.tsx    ← client: active tab state
 │   │   ├── EquipmentPreviewCard.tsx
 │   │   ├── WhatIfCard.tsx
 │   │   ├── AIAnalysisCard.tsx
@@ -278,22 +280,62 @@ page.tsx               CharacterInfoCard.tsx            Card.tsx
 - **JSX whitespace:** `{icon} {title}` on one line keeps the space; line breaks are not kept as spaces. `flex gap-2` gives precise spacing. React inserts `<!-- -->` between adjacent text values (invisible).
 - Changing a component's required props makes TypeScript flag every place that uses it — a safe way to update all call sites.
 
+### Layer 9 — Responsive 2-column grid
+
+**Built:** Search banner full-width on top, then a grid with two column wrappers (left: 캐릭터 정보, 장비, What-if; right: AI 성장 분석, AI 코치). As an exercise I hid the sidebar on phones with `hidden md:block`.
+
+**Learned:**
+- **Grid vs Flex:** flex = one direction (a line of items); grid = columns *and* rows (page layouts). `grid-cols-2` = two equal columns (`repeat(2, minmax(0, 1fr))`).
+- **Column wrappers:** one `<div>` per column so each side stacks independently (grid rows would otherwise force neighboring cards to equal heights).
+- **Responsive breakpoints are mobile first:** unprefixed class = smallest screens; `sm:` 640px, `md:` 768px, `lg:` 1024px, `xl:` 1280px add overrides for wider screens. `lg:` compiles to `@media (min-width: 64rem)`. Ask "what do I want on the smallest screen?" → that's the unprefixed class (`hidden md:block`, not `block md:hidden`).
+- **When a Tailwind class does nothing:** (1) check spelling — `className` is just a string, so typos like `hiddden` give no error; (2) stale CSS — hard refresh, then restart `npm run dev`. The project lives in OneDrive, which can interfere with file watching.
+- **Tailwind CSS IntelliSense** VS Code extension: autocomplete + hover preview for classes.
+
+**Milestone 1 complete.** ✅
+
+---
+
+## Milestone 1.5 Log — Match the reference (empty state)
+
+I asked Claude to build this milestone for me: CSS/Tailwind detail isn't where I want to spend learning time, and I'd already learned the core React concepts. Claude explains only the *new* React/TypeScript ideas.
+
+**Built (Layers 1.5-1 to 1.5-7):**
+- Sky-to-cream background gradient (`maple-sky` theme color).
+- `Card`: new optional `subtitle` and `action` props.
+- `EmptyState`: reusable dashed box with an icon and a multi-line message.
+- 캐릭터 정보: portrait placeholder, name/level row, 4 stat badges, and `CharacterTabs` (6 tabs, 기본 정보 shows a 2-column info table; other tabs show an empty state).
+- 주요 장비 미리보기: 9 pastel `+` slots and a "전체 장비 보기 →" button.
+- What-if / AI 성장 분석 / AI 코치: subtitles, empty states, "제공 예정 기능" list, and a working chat input (clears on send, send button disabled when empty).
+- Header: two-line logo, nav pills (홈 · 가이드 · 자주 묻는 질문), language button, avatar button. Sidebar: mascot speech bubble and "업데이트 예정" box. Search banner: speech bubble and decorations.
+- Dashboard changed from two independent columns to **two rows** so heights match: row 1 = 캐릭터 정보 | AI 성장 분석, row 2 = (장비 + What-if) | AI 코치. Grid rows stretch items to the tallest one; `Card` wraps children in `flex flex-1 flex-col` and `EmptyState` has `flex-1`, so the dashed boxes grow into the extra space. `grid-rows-[auto_1fr]` (Tailwind arbitrary value) gives 장비 its natural height and What-if the rest.
+- Checked with real browser screenshots at desktop and narrow widths.
+
+**New concepts to know:**
+- **Optional props:** `subtitle?: string` — the `?` means "may be omitted". Inside the component it's `string | undefined`, so render it conditionally: `{subtitle && <p>{subtitle}</p>}`.
+- **JSX as a normal prop:** `action?: React.ReactNode` lets a parent pass a whole element (the "전체 장비 보기" button) into a specific slot of `Card`. `children` is just the default slot; you can have named slots too.
+- **Keep Client Components small:** only `CharacterTabs` needs `"use client"` (it has state). `CharacterInfoCard` stays a Server Component and simply renders `<CharacterTabs />` inside it.
+- **Tabs = state + conditional rendering:** `const [activeTab, setActiveTab] = useState("기본 정보")`; each tab button calls `setActiveTab(tab.label)` on click; the panel uses a ternary on `activeTab`. `onClick={() => setActiveTab(tab.label)}` wraps the call in an arrow function so it runs *on click*, not during render.
+- **Accessibility for tabs:** `role="tablist"`, `role="tab"`, `aria-selected={...}` tell screen readers these buttons are tabs and which is active.
+- **Nested arrays:** `string[][]` = an array of arrays (two columns of labels), rendered with a `.map()` inside a `.map()`.
+- **`.find()`, `?.`, `??`:** `tabs.find(t => t.label === activeTab)?.icon ?? "📋"` — find the first matching item; `?.` safely reads `.icon` even if nothing was found (`undefined`); `??` supplies a fallback when the left side is `undefined`/`null`.
+- **`disabled={!message.trim()}`:** the send button is disabled while the input is empty or only spaces. `.trim()` removes surrounding whitespace; `!` means "not".
+- **Early `return` in a handler:** `if (!message.trim()) return;` stops the function before sending an empty message.
+- **Dynamic Tailwind classes must be complete strings:** `"border-pink-200 bg-pink-50"` works; building `` `bg-${color}-50` `` does **not**, because Tailwind scans source text for full class names.
+- **Index as key:** `key={index}` is acceptable only for static lists that never reorder (the 9 slots). Prefer a real unique value otherwise.
+- **Line breaks in text:** `"첫 줄\n둘째 줄"` + `whitespace-pre-line` renders the `\n` as a line break.
+- **Semantic list for label/value pairs:** `<dl>` (description list) with `<dt>` (term, e.g. 월드) and `<dd>` (value, e.g. `-`).
+- **Positioning:** `relative` on the banner + `absolute -top-5 -left-4` on the 🌸 places decorations relative to the banner's corner. `aria-hidden="true"` hides purely decorative emoji from screen readers.
+
 ---
 
 ## Next Step
 
-### Layer 9 — Responsive 2-column grid (last layer of Milestone 1)
+### Layer 1.5-8 — Art pass
 
-Arrange the cards like the reference: the search banner full-width on top, then two columns (left: 캐릭터 정보, 장비, What-if; right: AI 성장 분석, AI 코치). On narrow screens, keep the current single stacked column.
+Replace emoji stand-ins with real MapleStory-style images: sky/forest background, mushroom mascots (sidebar, search banner, AI card), and illustrated icons.
 
-**Concepts:**
-1. **CSS Grid** in Tailwind (`grid`, `grid-cols-2`, `gap-*`)
-2. **Responsive breakpoints** (`md:`, `lg:`) — "mobile first": base classes for phones, prefixed classes for larger screens
-3. A layout-only wrapper `<div>` for each column
+**What I need to do first:** collect image files (PNG with transparent background is best) and put them in `frontend/public/images/`.
 
-**Files:**
-```text
-frontend/app/page.tsx   ← wrap the cards in a grid with two column <div>s
-```
+**Concepts:** the `public/` folder (files served at `/images/...`), Next.js `<Image>` component (`next/image`), CSS background images.
 
-**Expected result:** On a wide window, a 2-column dashboard similar to the reference. Shrink the window and it collapses back into one column.
+**Then:** Milestone 2 — real character data (mock data → FastAPI → Nexon API).
