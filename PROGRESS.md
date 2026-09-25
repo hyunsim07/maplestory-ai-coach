@@ -20,9 +20,24 @@ Update this at the end of every layer.
 | 6 | `Card` component + empty 캐릭터 정보 / AI 분석 cards (props, children, conditional rendering) | ✅ Done |
 | 7 | Remaining empty cards (장비, What-if, AI 코치) | ✅ Done |
 | 8 | Basic Tailwind styling (pastel, rounded, shadows) | ✅ Done |
-| 9 | Responsive 2-column grid | ⏭️ Next |
+| 9 | Responsive 2-column grid | 🔄 Grid done; sidebar-hiding exercise pending |
 
 Milestone 1 rules: **no** Nexon API, FastAPI, database, LLM, LangGraph, or RAG.
+
+**Milestone 1.5: Match the reference (empty state)** — chosen over going straight to the backend, because the reference screenshot *is* an empty state (all values `-`), so it can be built without data. Same rules as Milestone 1 (no API, no backend).
+
+| Layer | Topic | Key concepts |
+|---|---|---|
+| 1.5-1 | 캐릭터 정보: portrait placeholder, name/level row, 4 stat badges | `.map()` over objects, nested flex |
+| 1.5-2 | 캐릭터 정보: 6 tabs (기본 정보, 스탯, 장비, 유니온, 헥사, 보스 이력) | `useState` for the active tab, conditional classes |
+| 1.5-3 | 캐릭터 정보: 2-column info table (월드, 직업, HP, MP…) with `-` values | Grid, `<dl>`/`<dt>`/`<dd>` |
+| 1.5-4 | 주요 장비 미리보기: 9 colorful `+` slots, "전체 장비 보기" link | Generating repeated items, grid columns |
+| 1.5-5 | AI 성장 분석 + What-if: dashed empty-state boxes, "제공 예정 기능" list | A reusable `EmptyState` component, optional props |
+| 1.5-6 | AI 코치: subtitle, empty-state box, message input + send button | Controlled input again, Client Component |
+| 1.5-7 | Header nav pills + avatar; sidebar "업데이트 예정" box | Reusing patterns |
+| 1.5-8 | Art pass: background scenery, mascots, illustrated icons | `public/` folder, `next/image`, background images |
+
+**Milestone 2 (after 1.5): Search a character, see real data** — mock `Character` type → lifting state up → FastAPI (`/health`, `/character/{name}`) → `fetch()` with loading/error states → Nexon API key in `.env` → real character data. Still no LLM.
 
 ---
 

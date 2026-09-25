@@ -20,7 +20,7 @@ const activeLabel = "대시보드";
 
 export default function Sidebar() {
   return (
-    <aside className="w-60 p-6 pr-0">
+    <aside className="hidden w-60 p-6 pr-0 md:block">
       <nav className="rounded-2xl bg-white p-3 shadow-md">
         <ul className="flex flex-col gap-1">
           {navItems.map((item) => (

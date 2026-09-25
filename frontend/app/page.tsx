@@ -15,11 +15,19 @@ export default function Home() {
         <Sidebar />
         <main className="flex flex-1 flex-col gap-6 p-6">
           <CharacterSearch />
-          <CharacterInfoCard />
-          <EquipmentPreviewCard />
-          <WhatIfCard />
-          <AIAnalysisCard />
-          <AICoachCard />
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="flex flex-col gap-6">
+              <CharacterInfoCard />
+              <EquipmentPreviewCard />
+              <WhatIfCard />
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <AIAnalysisCard />
+              <AICoachCard />
+            </div>
+          </div>
         </main>
       </div>
     </div>
