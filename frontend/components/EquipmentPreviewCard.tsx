@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Card from "@/components/Card";
 
 // Full class names (not built from pieces) so Tailwind can find them when scanning.
@@ -17,7 +18,16 @@ export default function EquipmentPreviewCard() {
   return (
     <Card
       title="주요 장비 미리보기"
-      icon="🗡️"
+      icon={
+        <Image
+          src="/images/equipment.png"
+          alt=""
+          width={37}
+          height={35}
+          unoptimized
+          className="[image-rendering:pixelated]"
+        />
+      }
       action={
         <button
           type="button"

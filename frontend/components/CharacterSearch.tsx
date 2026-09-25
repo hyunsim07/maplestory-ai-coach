@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Mushroom from "@/components/Mushroom";
 
 export default function CharacterSearch() {
   const [nickname, setNickname] = useState("");
@@ -17,9 +18,7 @@ export default function CharacterSearch() {
       <span className="absolute -top-5 -left-4 text-4xl" aria-hidden="true">
         🌸
       </span>
-      <span className="absolute -right-3 -bottom-5 text-4xl" aria-hidden="true">
-        🍄
-      </span>
+      <Mushroom size={64} className="absolute -right-5 -bottom-7 drop-shadow-md" />
 
       <div className="flex items-start justify-between gap-6">
         <div>

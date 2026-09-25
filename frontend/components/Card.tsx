@@ -1,6 +1,6 @@
 type CardProps = {
   title: string;
-  icon: string;
+  icon: React.ReactNode;
   subtitle?: string;
   action?: React.ReactNode;
   children: React.ReactNode;

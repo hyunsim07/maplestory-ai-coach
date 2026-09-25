@@ -1,3 +1,5 @@
+import Mushroom from "@/components/Mushroom";
+
 type NavItem = {
   icon: string;
   label: string;
@@ -42,7 +44,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="flex items-end gap-2 px-1">
-        <span className="text-5xl">🍄</span>
+        <Mushroom size={64} className="shrink-0 drop-shadow-md" />
         <p className="rounded-2xl rounded-bl-none bg-white px-3 py-2 text-xs leading-relaxed shadow-sm">
           더 똑똑한
           <br />

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import CharacterSearch from "@/components/CharacterSearch";
@@ -10,6 +11,17 @@ import AICoachCard from "@/components/AICoachCard";
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
+      <div className="fixed inset-0 -z-10">
+        <Image
+          src="/images/background2.png"
+          alt=""
+          fill
+          sizes="100vw"
+          loading="eager"
+          className="object-cover"
+        />
+      </div>
+
       <Header />
       <div className="flex flex-1">
         <Sidebar />

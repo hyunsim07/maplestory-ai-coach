@@ -1,5 +1,6 @@
 import Card from "@/components/Card";
 import CharacterTabs from "@/components/CharacterTabs";
+import Mushroom from "@/components/Mushroom";
 
 type StatBadge = {
   icon: string;
@@ -15,7 +16,7 @@ const statBadges: StatBadge[] = [
 
 export default function CharacterInfoCard() {
   return (
-    <Card title="캐릭터 정보" icon="🍄">
+    <Card title="캐릭터 정보" icon={<Mushroom size={32} />}>
       <div className="flex flex-col gap-5 sm:flex-row">
         <div className="flex h-44 w-full shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 text-center sm:w-44">
           <span className="text-5xl opacity-30">👤</span>

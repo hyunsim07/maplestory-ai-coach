@@ -326,6 +326,24 @@ I asked Claude to build this milestone for me: CSS/Tailwind detail isn't where I
 - **Semantic list for label/value pairs:** `<dl>` (description list) with `<dt>` (term, e.g. 월드) and `<dd>` (value, e.g. `-`).
 - **Positioning:** `relative` on the banner + `absolute -top-5 -left-4` on the 🌸 places decorations relative to the banner's corner. `aria-hidden="true"` hides purely decorative emoji from screen readers.
 
+### Layer 1.5-8 — Art pass (in progress)
+
+**Built:** Full-page MapleStory background (`public/images/background2.png`, a softer replacement for the first `background.png`) and a pixel-art sword icon for 주요 장비 미리보기 (`public/images/equipment.png`). The logo got a frosted-white pill so it stays readable over the busy background.
+
+**Learned:**
+- **`public/` folder:** a file at `frontend/public/images/x.png` is served at the URL `/images/x.png` (no `public` in the path).
+- **`next/image` `<Image>`:** automatically resizes and converts to WebP (our 2.2 MB PNG became ~175 KB at 1920px). `fill` + `sizes="100vw"` + `object-cover` makes it cover its parent; the parent is `fixed inset-0 -z-10` (pinned to the screen, behind everything). `alt=""` marks it as decorative.
+- In Next.js 16, `priority` is **deprecated** → use `loading="eager"` (or `preload`) for important above-the-fold images.
+- **Widening a prop type:** `icon: React.ReactNode` (was `string`) accepts both emoji strings and `<Image>` elements, so existing cards didn't need changes.
+- **Pixel art:** `unoptimized` skips resizing (tiny file; resizing would blur it) and `[image-rendering:pixelated]` keeps edges crisp when scaled.
+- `bg-white/80` = white at 80% opacity; `backdrop-blur` blurs what's behind it (frosted glass).
+
+**Mushroom mascot + header redesign:**
+- `mushroom.png` had a lot of empty transparent space around it, so a trimmed copy `mushroom-trimmed.png` (693×619) is used; the original is untouched.
+- New `components/Mushroom.tsx` wraps `<Image>` with a `size` prop and keeps the aspect ratio (`height = size × 619/693`). Used in 5 places: header avatar, 캐릭터 정보 icon, search banner corner, sidebar speech bubble, AI 성장 분석 empty state. One component = change the image once, it updates everywhere.
+- `EmptyState`'s `icon` widened to `React.ReactNode` (same trick as `Card`).
+- Header: the right side is now one frosted bar the same height as the logo (`h-16`): nav links with a solid blue active pill, a divider, a 한국어 | EN segmented toggle (from an array + active value, same pattern as the sidebar), and the mushroom avatar.
+
 ---
 
 ## Next Step

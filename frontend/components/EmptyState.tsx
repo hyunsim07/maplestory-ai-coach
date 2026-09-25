@@ -1,5 +1,5 @@
 type EmptyStateProps = {
-  icon: string;
+  icon: React.ReactNode;
   message: string;
 };
 

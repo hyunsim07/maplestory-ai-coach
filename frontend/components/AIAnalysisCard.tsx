@@ -1,5 +1,6 @@
 import Card from "@/components/Card";
 import EmptyState from "@/components/EmptyState";
+import Mushroom from "@/components/Mushroom";
 
 const upcomingFeatures: string[] = [
   "현재 캐릭터 상태 분석",
@@ -11,7 +12,7 @@ const upcomingFeatures: string[] = [
 export default function AIAnalysisCard() {
   return (
     <Card title="AI 성장 분석" icon="💡">
-      <EmptyState icon="🍄" message={"캐릭터를 검색하면\nAI가 성장 방향을 분석해드립니다."} />
+      <EmptyState icon={<Mushroom size={72} />} message={"캐릭터를 검색하면\nAI가 성장 방향을 분석해드립니다."} />
 
       <div className="mt-4 flex gap-4 rounded-2xl bg-violet-50 p-5">
         <span className="text-2xl">✨</span>

@@ -9,13 +9,6 @@
 }
 
 body {
-  background-color: var(--color-maple-cream);
-  background-image: linear-gradient(
-    to bottom,
-    var(--color-maple-sky) 0,
-    #e3f4ff 320px,
-    var(--color-maple-cream) 720px
-  );
-  background-repeat: no-repeat;
+  background-color: var(--color-maple-sky);
   color: var(--color-maple-ink);
 }
