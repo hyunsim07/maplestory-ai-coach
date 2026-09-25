@@ -17,9 +17,9 @@ Update this at the end of every layer.
 | 3 | `Header` + `Sidebar` components (own files, import/export) | ✅ Done |
 | 4 | Sidebar navigation links (list rendering) | ✅ Done |
 | 5 | `CharacterSearch` (form UI, then state + events) | ✅ Done |
-| 6 | `Card` component + empty 캐릭터 정보 card (props, children, conditional rendering) | ⏭️ Next |
-| 7 | Remaining empty cards (장비, What-if, AI 분석, AI 코치) | ⬜ |
-| 8 | Basic Tailwind styling (pastel, rounded, shadows) | ⬜ |
+| 6 | `Card` component + empty 캐릭터 정보 / AI 분석 cards (props, children, conditional rendering) | ✅ Done |
+| 7 | Remaining empty cards (장비, What-if, AI 코치) | ✅ Done |
+| 8 | Basic Tailwind styling (pastel, rounded, shadows) | ⏭️ Next |
 | 9 | Responsive 2-column grid | ⬜ |
 
 Milestone 1 rules: **no** Nexon API, FastAPI, database, LLM, LangGraph, or RAG.
@@ -42,7 +42,13 @@ maplestory-ai-coach/
 │   ├── components/    ← reusable UI pieces (not routes)
 │   │   ├── Header.tsx
 │   │   ├── Sidebar.tsx
-│   │   └── CharacterSearch.tsx  ← first Client Component
+│   │   ├── CharacterSearch.tsx  ← first Client Component
+│   │   ├── Card.tsx             ← reusable card frame (title + children)
+│   │   ├── CharacterInfoCard.tsx
+│   │   ├── EquipmentPreviewCard.tsx
+│   │   ├── WhatIfCard.tsx
+│   │   ├── AIAnalysisCard.tsx
+│   │   └── AICoachCard.tsx
 │   ├── public/        ← static files (images)
 │   ├── tsconfig.json  ← TypeScript settings (defines the @/ alias)
 │   └── package.json   ← dependencies + scripts (npm run dev)
@@ -187,24 +193,71 @@ Press Enter      → onSubmit → handleSubmit(event)
 - `마지막 검색:` shows even before any search → needs **conditional rendering**.
 - `searchedName` lives inside `CharacterSearch`, but the 캐릭터 정보 / AI 분석 cards will need it too → **lifting state up** (later).
 
+### Layer 6 — `Card` component, props, children, conditional rendering
+
+**Built:**
+- `components/Card.tsx`: a generic card frame (`<section>`, `<h2>{title}</h2>`, `{children}`). Card styling now lives in **one place**.
+- `components/CharacterInfoCard.tsx`: `<Card title="캐릭터 정보">` + empty-state message.
+- I built `components/AIAnalysisCard.tsx` myself with the same pattern.
+- Fixed the dangling `마지막 검색:` label with conditional rendering.
+
+```text
+page.tsx               CharacterInfoCard.tsx            Card.tsx
+<CharacterInfoCard /> → <Card title="캐릭터 정보">   →   <section>
+                          <p>empty message</p>            <h2>{title}</h2>
+                        </Card>                           {children}
+                                                        </section>
+```
+
+**Learned:**
+- **Props** are a component's arguments. `<Card title="캐릭터 정보">` → React calls `Card({ title: "캐릭터 정보", children: ... })`. Unpack with `function Card({ title, children })`.
+- **`children`** = whatever is written between `<Card>` and `</Card>`. The component decides where to place it with `{children}` (same pattern as `layout.tsx`).
+- Normal props for simple values; `children` for chunks of UI.
+- **Typing props:** `type CardProps = { title: string; children: React.ReactNode; }`. TypeScript then catches a missing `title`, a wrong type (`title={42}`), or a typo (`titel`) before running.
+- **Generic vs specific components:** `Card` knows nothing about characters (reused everywhere); `CharacterInfoCard` holds the character-specific content (will grow).
+- **Conditional rendering with `&&`:** `{searchedName && <p>...</p>}` — like Python's `and`. `""` is falsy → renders nothing; a non-empty string is truthy → renders the `<p>`. React re-evaluates it on every render, so I describe the UI for each state instead of manually showing/hiding.
+- **Either-or with a ternary:** `{cond ? <A /> : <B />}` — like Python's `a if cond else b`. Cards will use this for "empty state vs data".
+- **Gotcha:** `{0 && <p/>}` renders `0`. With numbers, write explicit conditions like `{level > 0 && ...}`.
+
+### Layer 7 — Remaining empty cards
+
+**Built (by me):** `EquipmentPreviewCard`, `WhatIfCard`, `AICoachCard`, each using `<Card>` with an empty-state message. `page.tsx` now has no raw `<section>` tags.
+
+```tsx
+<main>
+  <CharacterSearch />
+  <CharacterInfoCard />
+  <EquipmentPreviewCard />
+  <WhatIfCard />
+  <AIAnalysisCard />
+  <AICoachCard />
+</main>
+```
+
+**Learned:**
+- `page.tsx` now describes **what** is on the page; each component file handles **how**. It reads like the wireframe.
+- Semantic heading outline: one `<h1>` (app name) and an `<h2>` per section.
+- `CharacterSearch` intentionally does **not** use `Card`: it's a hero banner with its own look.
+
 ---
 
 ## Next Step
 
-### Layer 6 — `Card` component + empty 캐릭터 정보 card
+### Layer 8 — Basic Tailwind styling
 
-`className="border p-4"` is repeated on every section. Build one reusable `Card` that owns the card frame and title, and use it for 캐릭터 정보.
+Structure is done; now give it the cute, pastel, rounded MapleStory feel. Still no grid (that's Layer 9).
 
 **Concepts:**
-1. **Props** — passing data into a component (`<Card title="캐릭터 정보">`) and typing them with TypeScript
-2. **`children`** — passing JSX *inside* a component (like `layout.tsx` does)
-3. **Conditional rendering** — show the empty-state message only when there's no data (also fixes `마지막 검색:`)
+1. **Colors** — Tailwind's color palette (`bg-orange-50`, `text-amber-900`) and defining our own theme colors in `globals.css`
+2. **Card look** — `rounded-2xl`, `shadow-md`, `bg-white`, borders
+3. **Typography** — `text-xl`, `font-bold`, and a Korean-friendly font
 
 **Files:**
 ```text
-frontend/components/Card.tsx               ← new
-frontend/components/CharacterInfoCard.tsx  ← new
-frontend/app/page.tsx                      ← use <CharacterInfoCard />
+frontend/app/globals.css        ← remove starter dark mode, add our color theme
+frontend/app/layout.tsx         ← font
+frontend/components/Card.tsx    ← one edit restyles all five cards
+frontend/components/Header.tsx, Sidebar.tsx, CharacterSearch.tsx
 ```
 
-**Expected result:** The 캐릭터 정보 section looks the same but is built from a reusable `Card`, with a proper `<h2>` title and the empty-state message "캐릭터를 검색하면 정보가 표시됩니다."
+**Expected result:** A soft pastel page with white rounded cards, clear headings, and a styled search bar. Cards still stacked vertically.

@@ -29,7 +29,7 @@ export default function CharacterSearch() {
           분석하기
         </button>
       </form>
-      <p>마지막 검색: {searchedName}</p>
+      {searchedName && <p>마지막 검색: {searchedName}</p>}
     </section>
   );
 }
