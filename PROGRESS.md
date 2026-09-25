@@ -37,7 +37,19 @@ Milestone 1 rules: **no** Nexon API, FastAPI, database, LLM, LangGraph, or RAG.
 | 1.5-7 | Header nav pills + avatar; sidebar "업데이트 예정" box | Reusing patterns | ✅ Done |
 | 1.5-8 | Art pass: background scenery, mascots, illustrated icons | `public/` folder, `next/image`, background images | ⏭️ Next (needs image files) |
 
-**Milestone 2 (after 1.5): Search a character, see real data** — mock `Character` type → lifting state up → FastAPI (`/health`, `/character/{name}`) → `fetch()` with loading/error states → Nexon API key in `.env` → real character data. Still no LLM.
+**Milestone 2: Search a character, see real data** (in progress) — still no LLM, database, LangGraph, or RAG. Data source: KMS via Nexon Open API.
+
+| Layer | Topic | Key concepts | Status |
+|---|---|---|---|
+| 2-1 | FastAPI setup + `GET /health` | venv, endpoint, decorator, JSON, `/docs` | ✅ Done |
+| 2-2 | `GET /character/{name}` returning mock data | Path parameters, Pydantic models | ✅ Done |
+| 2-3 | Share the searched nickname across the page | Lifting state up | ⏭️ Next |
+| 2-4 | Frontend calls the backend with `fetch()` | `async`/`await`, loading & error states, CORS | ⬜ |
+| 2-5 | Nexon API key stored safely | Environment variables, `.env`, secrets stay on the backend | ⬜ |
+| 2-6 | Backend calls Nexon: nickname → `ocid` → basic info | External API calls, `httpx`, async Python | ⬜ |
+| 2-7 | Handle failures | Not found, rate limits, Nexon down; HTTP status codes; friendly errors | ⬜ |
+| 2-8 | Show real data in the cards | Replace `-` with real values; remote character image | ⬜ |
+| 2-9 | First automated tests | pytest for backend endpoints | ⬜ |
 
 ---
 
@@ -384,16 +396,77 @@ I asked Claude to build this milestone for me: CSS/Tailwind detail isn't where I
 - New source images (`logo.png`, `character.png`, `slime.png`, 1254×1254) were trimmed and resized to 256/256/128px copies in `icons/`.
 - Header: the right side is now one frosted bar the same height as the logo (`h-16`): nav links with a solid blue active pill, a divider, a 한국어 | EN segmented toggle (from an array + active value, same pattern as the sidebar), and the mushroom avatar.
 
+**Milestone 1.5 complete.** ✅ (Art pass done: background, mushroom mascot, and illustrated icons everywhere except ✨ on 제공 예정 기능, kept by choice.)
+
+---
+
+## Milestone 2 Log — Search a character, see real data
+
+Back to full teaching mode: explain → small piece → run → explain → I try something.
+
+### Layer 2-1 — FastAPI setup + `GET /health`
+
+**Built:** Installed Python 3.13 (alongside 3.9). Created `backend/` with a virtual environment, installed FastAPI + Uvicorn, recorded versions in `requirements.txt`, and wrote `main.py` with `GET /health`. As exercises I renamed the function to `check_server` and added `GET /hello`.
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/health")
+def check_server():
+    return {"status": "ok"}
+```
+
+**Learned:**
+- **Why a backend:** the API key must stay secret. Anything in frontend code is visible in the browser, so the backend is a middleman that holds the key and talks to Nexon (and later the LLM).
+- **`py` launcher:** `py --list` shows installed Pythons; `py -3.13` picks a version.
+- **Virtual environment (`.venv`)**: a private package folder for one project (like `node_modules`). It doesn't contain Python itself — `pyvenv.cfg` points to the real Python 3.13 (`home = ...Python313`); only `Lib/site-packages` is private. Never committed.
+- **Activation** puts `.venv\Scripts` at the front of **PATH**, so `python`/`pip` mean the project's copies. Without activation, `python` = global 3.9. Always check for `(.venv)` before `pip install`.
+- PowerShell: run scripts with `.\` (`.\.venv\Scripts\Activate.ps1`); without it, `.venv\...` is parsed as `Module\Command`.
+- **FastAPI vs Uvicorn:** FastAPI = the framework I write endpoints with; Uvicorn = the server that listens on port 8000 and passes requests to the app. `uvicorn main:app --reload` = load `app` from `main.py`, auto-restart on save.
+- **Endpoint** = HTTP method + path → function. `GET` = read data. Returning a dict → FastAPI sends JSON with status **200**; unknown paths → **404** `{"detail": "Not Found"}`.
+- **Decorator:** `@app.get("/health")` above a function = `func = app.get("/health")(func)`. `app.get(path)` returns a "register" function (a **closure** remembering the path) that adds a row `GET /health → func` to the app's routing table and returns the function unchanged. Non-decorator equivalent: `app.add_api_route("/health", func, methods=["GET"])`.
+- The **URL comes from the decorator string**, not the function name. The name is just a label (shown as the title in `/docs`).
+- `/docs` = automatic interactive API documentation.
+- `pip freeze` records exact versions; `pip install -r requirements.txt` recreates the environment. ⚠️ In Windows PowerShell 5.1, `>` writes **UTF-16** (GitHub shows it as binary). Use `pip freeze | Out-File -Encoding utf8 requirements.txt` instead (or `>` in Git Bash).
+
+### Layer 2-2 — `GET /character/{name}` with mock data
+
+**Built:** A `Character` Pydantic model and `GET /character/{name}`, which returns fake character data using the name from the URL. Also fixed `requirements.txt`, which PowerShell had saved as UTF-16.
+
+```python
+class Character(BaseModel):
+    name: str
+    level: int
+    job: str
+    world: str
+    guild: str | None = None
+
+@app.get("/character/{name}")
+def get_character(name: str) -> Character:
+    return Character(name=name, level=285, job="아크메이지(불,독)", world="스카니아", guild="메이플코치")
+```
+
+**Learned:**
+- **Path parameters:** `{name}` in the path is matched by name to the function parameter (`/character/DreamHero` → `name="DreamHero"`). One route covers every nickname. Type hints are enforced: a wrong type → automatic **422** error.
+- **Pydantic `BaseModel`** = Python's version of a TypeScript `type`. `str | None = None` ≈ `guild?: string` (optional, defaults to nothing).
+- **Difference from TypeScript:** TS types vanish at runtime; Pydantic **validates at runtime** (`level="abc"` → error). Important for data from Nexon.
+- **`-> Character` (response model):** FastAPI validates, converts to JSON, and documents the exact response shape in `/docs`. This is the **contract** the frontend will rely on.
+- **Mock first:** build the whole data flow with fake data, then swap in Nexon later without changing the shape.
+- Pydantic came installed with FastAPI (FastAPI is built on it).
+
 ---
 
 ## Next Step
 
-### Layer 1.5-8 — Art pass
+### Layer 2-3 — Share the searched nickname across the page (lifting state up)
 
-Replace emoji stand-ins with real MapleStory-style images: sky/forest background, mushroom mascots (sidebar, search banner, AI card), and illustrated icons.
+Right now `searchedName` lives inside `CharacterSearch`, but `CharacterInfoCard` also needs it. Components can't read each other's state — so we move the state **up** to their common parent (`page.tsx`) and pass it **down** as props.
 
-**What I need to do first:** collect image files (PNG with transparent background is best) and put them in `frontend/public/images/`.
+**Concepts:**
+1. **Lifting state up** — state lives in the closest common parent
+2. **Passing functions as props** — the child calls `onSearch(nickname)` to tell the parent
+3. Why `page.tsx` then needs `"use client"` (or a small client wrapper component)
 
-**Concepts:** the `public/` folder (files served at `/images/...`), Next.js `<Image>` component (`next/image`), CSS background images.
-
-**Then:** Milestone 2 — real character data (mock data → FastAPI → Nexon API).
+**Expected result:** Searching a nickname makes the 캐릭터 정보 card show that nickname instead of `-`. Still no backend call (that's Layer 2-4).
