@@ -15,8 +15,8 @@ Update this at the end of every layer.
 | 1 | Empty Next.js app | ✅ Done |
 | 2 | Basic page structure | ✅ Done |
 | 3 | `Header` + `Sidebar` components (own files, import/export) | ✅ Done |
-| 4 | Sidebar navigation links (list rendering) | ⏭️ Next |
-| 5 | `CharacterSearch` (state + events) | ⬜ |
+| 4 | Sidebar navigation links (list rendering) | ✅ Done |
+| 5 | `CharacterSearch` (form UI, then state + events) | ⏭️ Next |
 | 6 | `Card` component + empty 캐릭터 정보 card | ⬜ |
 | 7 | Remaining empty cards (장비, What-if, AI 분석, AI 코치) | ⬜ |
 | 8 | Basic Tailwind styling (pastel, rounded, shadows) | ⬜ |
@@ -137,22 +137,45 @@ page.tsx (Home)
   - `frontend/` is its own world for Next.js; it doesn't know about the repo root or `backend/`.
 - **Flex alignment:** `justify-between` pushes children to opposite ends; `items-center` centers them vertically. In a row, `justify-` = horizontal, `items-` = vertical.
 
+### Layer 4 — Sidebar navigation links (list rendering)
+
+**Built:** The sidebar shows 10 menu labels (대시보드 … 설정), generated from an array with `.map()`. Not clickable yet.
+
+```tsx
+const navItems: string[] = ["대시보드", "캐릭터 분석", ...];
+
+{navItems.map((item) => (
+  <li key={item}>{item}</li>
+))}
+```
+
+**Learned:**
+- **Array + type:** `const navItems: string[] = [...]` — like a Python list; `string[]` = "array of strings", so TypeScript rejects a number in it.
+- Data that never changes lives **outside** the component function (not rebuilt on every render, easy to find).
+- **`.map()`** turns each array item into JSX and returns a new array (like a Python list comprehension). React renders an array of JSX in order.
+- **Arrow function:** `(item) => (...)` — a short function, like Python's `lambda`.
+- **`key`** lets React tell list items apart when the list changes. Must be unique among siblings, goes on the outermost element inside `.map()`, and never appears in the HTML. Missing keys cause a console warning.
+- **`<nav>` / `<ul>` / `<li>`**: navigation block / unordered list / list item. Tailwind removes the default bullets.
+- Keeping labels in an array separates **data** from **layout** and makes translation (ko/en) easy later.
+
 ---
 
 ## Next Step
 
-### Layer 4 — Sidebar navigation links (list rendering)
+### Layer 5 — `CharacterSearch` component
 
-Fill the sidebar with the navigation items from the reference (대시보드, 캐릭터 분석, AI 성장 분석, What-if 시뮬레이터, 장비 분석, 유니온 분석, HEXA 분석, ...).
+Split into two small steps:
 
-**Concepts:**
-1. Storing data in an **array** (and TypeScript's array type)
-2. **List rendering** with `.map()` — turning an array of data into JSX
-3. The **`key`** prop, and semantic `<nav>` / `<ul>` / `<li>`
+**5a — Static search UI:** `components/CharacterSearch.tsx` with a heading, an `<input>`, and a `<button>` inside a `<form>`.
+- Concepts: `<form>`, `<input>`, `<button>`, and JSX attribute differences (`placeholder`, `type`).
+
+**5b — Make it interactive:** type a nickname, click 분석하기, see it printed in the browser console.
+- Concepts: **Client Components** (`"use client"`), **`useState`** (controlled input), **event handlers** (`onChange`, `onSubmit`).
 
 **Files:**
 ```text
-frontend/components/Sidebar.tsx   ← changes
+frontend/components/CharacterSearch.tsx   ← new
+frontend/app/page.tsx                     ← replace the 캐릭터 검색 section with <CharacterSearch />
 ```
 
-**Expected result:** The sidebar shows a vertical list of navigation labels, generated from an array. Not clickable yet.
+**Expected result:** A search box and button. Submitting logs the nickname to the console. No API yet.
