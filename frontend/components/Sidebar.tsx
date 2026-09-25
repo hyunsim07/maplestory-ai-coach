@@ -1,21 +1,22 @@
+import Image from "next/image";
 import Mushroom from "@/components/Mushroom";
 
 type NavItem = {
-  icon: string;
+  iconSrc: string;
   label: string;
 };
 
 const navItems: NavItem[] = [
-  { icon: "🏠", label: "대시보드" },
-  { icon: "🧑", label: "캐릭터 분석" },
-  { icon: "💡", label: "AI 성장 분석" },
-  { icon: "📊", label: "What-if 시뮬레이터" },
-  { icon: "⚔️", label: "장비 분석" },
-  { icon: "⭐", label: "유니온 분석" },
-  { icon: "🔮", label: "HEXA 분석" },
-  { icon: "👹", label: "보스 가이드" },
-  { icon: "📖", label: "지식 베이스" },
-  { icon: "⚙️", label: "설정" },
+  { iconSrc: "/images/icons/dashboard.png", label: "대시보드" },
+  { iconSrc: "/images/icons/character.png", label: "캐릭터 분석" },
+  { iconSrc: "/images/icons/ai.png", label: "AI 성장 분석" },
+  { iconSrc: "/images/icons/whatif.png", label: "What-if 시뮬레이터" },
+  { iconSrc: "/images/icons/equipment.png", label: "장비 분석" },
+  { iconSrc: "/images/icons/union.png", label: "유니온 분석" },
+  { iconSrc: "/images/icons/hexa.png", label: "HEXA 분석" },
+  { iconSrc: "/images/icons/boss.png", label: "보스 가이드" },
+  { iconSrc: "/images/icons/knowledge.png", label: "지식 베이스" },
+  { iconSrc: "/images/icons/settings.png", label: "설정" },
 ];
 
 const activeLabel = "대시보드";
@@ -36,7 +37,7 @@ export default function Sidebar() {
                   : "hover:bg-maple-cream"
               }`}
             >
-              <span className="text-lg">{item.icon}</span>
+              <Image src={item.iconSrc} alt="" width={28} height={28} />
               <span>{item.label}</span>
             </li>
           ))}

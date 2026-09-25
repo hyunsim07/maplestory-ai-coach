@@ -342,6 +342,7 @@ I asked Claude to build this milestone for me: CSS/Tailwind detail isn't where I
 - `mushroom.png` had a lot of empty transparent space around it, so a trimmed copy `mushroom-trimmed.png` (693×619) is used; the original is untouched.
 - New `components/Mushroom.tsx` wraps `<Image>` with a `size` prop and keeps the aspect ratio (`height = size × 619/693`). Used in 5 places: header avatar, 캐릭터 정보 icon, search banner corner, sidebar speech bubble, AI 성장 분석 empty state. One component = change the image once, it updates everywhere.
 - `EmptyState`'s `icon` widened to `React.ReactNode` (same trick as `Card`).
+- Sidebar icons: cut the 10 icons out of the `sidebaricons.png` sheet into `public/images/icons/*.png` (each trimmed, centered on a square, resized to 128×128, ~20–30 KB). `NavItem.icon` (emoji) became `NavItem.iconSrc` (a file path), rendered with `<Image width={28} height={28} />`.
 - Header: the right side is now one frosted bar the same height as the logo (`h-16`): nav links with a solid blue active pill, a divider, a 한국어 | EN segmented toggle (from an array + active value, same pattern as the sidebar), and the mushroom avatar.
 
 ---
