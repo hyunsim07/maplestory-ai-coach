@@ -1,12 +1,13 @@
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="border p-4">
-        <h1>MapleStory AI Coach</h1>
-      </header>
+      <Header />
 
       <div className="flex flex-1">
-        <aside className="w-56 border p-4">사이드바</aside>
+        <Sidebar />
 
         <main className="flex flex-1 flex-col gap-4 border p-4">
           <section className="border p-4">캐릭터 검색</section>

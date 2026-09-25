@@ -14,8 +14,8 @@ Update this at the end of every layer.
 | 0 | Install Node.js | ✅ Done |
 | 1 | Empty Next.js app | ✅ Done |
 | 2 | Basic page structure | ✅ Done |
-| 3 | `Header` component | ⏭️ Next |
-| 4 | `Sidebar` component (list rendering) | ⬜ |
+| 3 | `Header` + `Sidebar` components (own files, import/export) | ✅ Done |
+| 4 | Sidebar navigation links (list rendering) | ⏭️ Next |
 | 5 | `CharacterSearch` (state + events) | ⬜ |
 | 6 | `Card` component + empty 캐릭터 정보 card | ⬜ |
 | 7 | Remaining empty cards (장비, What-if, AI 분석, AI 코치) | ⬜ |
@@ -39,7 +39,11 @@ maplestory-ai-coach/
 │   │   ├── layout.tsx ← shell around every page (<html>, <body>, metadata)
 │   │   ├── page.tsx   ← the "/" page
 │   │   └── globals.css← loads Tailwind
+│   ├── components/    ← reusable UI pieces (not routes)
+│   │   ├── Header.tsx
+│   │   └── Sidebar.tsx
 │   ├── public/        ← static files (images)
+│   ├── tsconfig.json  ← TypeScript settings (defines the @/ alias)
 │   └── package.json   ← dependencies + scripts (npm run dev)
 └── backend/           ← FastAPI (later milestone, not created yet)
 ```
@@ -111,23 +115,44 @@ div (flex-col)
 
 **Commit:** `59edd0e completed Layer 3` (this commit contains the Layer 2 work)
 
+### Layer 3 — `Header` and `Sidebar` components
+
+**Built:** Moved the header into `components/Header.tsx` (added a static `한국어 / EN` label on the right). Then I built `components/Sidebar.tsx` myself following the same pattern.
+
+```text
+page.tsx (Home)
+├── <Header />    ← components/Header.tsx
+└── div (row)
+    ├── <Sidebar />  ← components/Sidebar.tsx
+    └── main → 6 sections
+```
+
+**Learned:**
+- **One component, one file.** `components/` holds reusable UI; `app/` holds routes (pages).
+- **`export default` + `import`** connect files: `import Header from "@/components/Header";` (like Python's `from ... import ...`).
+- **`<Header />`** tells React to call `Header()` and insert what it returns. Capital letter = my component; lowercase = HTML tag (`<Header />` ≠ `<header>`). `/>` = self-closing tag.
+- **`@/` vs `../`:**
+  - `..` is a *direction* ("go up from this file"), so the right path depends on where the importing file sits.
+  - `@/` is a *nickname* defined in `tsconfig.json` (`"@/*": ["./*"]`). `./` is relative to `tsconfig.json`, which lives in `frontend/`, so `@/` always = `frontend/`, from any file.
+  - `frontend/` is its own world for Next.js; it doesn't know about the repo root or `backend/`.
+- **Flex alignment:** `justify-between` pushes children to opposite ends; `items-center` centers them vertically. In a row, `justify-` = horizontal, `items-` = vertical.
+
 ---
 
 ## Next Step
 
-### Layer 3 — `Header` component
+### Layer 4 — Sidebar navigation links (list rendering)
 
-Move the header out of `page.tsx` into its own file and use it as `<Header />`.
+Fill the sidebar with the navigation items from the reference (대시보드, 캐릭터 분석, AI 성장 분석, What-if 시뮬레이터, 장비 분석, 유니온 분석, HEXA 분석, ...).
 
 **Concepts:**
-1. Creating a component in its own file
-2. `export` / `import` between our own files, and the `@/` alias
-3. Using a component like a custom tag: `<Header />`
+1. Storing data in an **array** (and TypeScript's array type)
+2. **List rendering** with `.map()` — turning an array of data into JSX
+3. The **`key`** prop, and semantic `<nav>` / `<ul>` / `<li>`
 
 **Files:**
 ```text
-frontend/components/Header.tsx   ← new
-frontend/app/page.tsx            ← uses <Header />
+frontend/components/Sidebar.tsx   ← changes
 ```
 
-**Expected result:** The page looks exactly the same. Only the code organization changes.
+**Expected result:** The sidebar shows a vertical list of navigation labels, generated from an array. Not clickable yet.
