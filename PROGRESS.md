@@ -16,8 +16,8 @@ Update this at the end of every layer.
 | 2 | Basic page structure | ✅ Done |
 | 3 | `Header` + `Sidebar` components (own files, import/export) | ✅ Done |
 | 4 | Sidebar navigation links (list rendering) | ✅ Done |
-| 5 | `CharacterSearch` (form UI, then state + events) | ⏭️ Next |
-| 6 | `Card` component + empty 캐릭터 정보 card | ⬜ |
+| 5 | `CharacterSearch` (form UI, then state + events) | ✅ Done |
+| 6 | `Card` component + empty 캐릭터 정보 card (props, children, conditional rendering) | ⏭️ Next |
 | 7 | Remaining empty cards (장비, What-if, AI 분석, AI 코치) | ⬜ |
 | 8 | Basic Tailwind styling (pastel, rounded, shadows) | ⬜ |
 | 9 | Responsive 2-column grid | ⬜ |
@@ -41,7 +41,8 @@ maplestory-ai-coach/
 │   │   └── globals.css← loads Tailwind
 │   ├── components/    ← reusable UI pieces (not routes)
 │   │   ├── Header.tsx
-│   │   └── Sidebar.tsx
+│   │   ├── Sidebar.tsx
+│   │   └── CharacterSearch.tsx  ← first Client Component
 │   ├── public/        ← static files (images)
 │   ├── tsconfig.json  ← TypeScript settings (defines the @/ alias)
 │   └── package.json   ← dependencies + scripts (npm run dev)
@@ -157,25 +158,53 @@ const navItems: string[] = ["대시보드", "캐릭터 분석", ...];
 - **`key`** lets React tell list items apart when the list changes. Must be unique among siblings, goes on the outermost element inside `.map()`, and never appears in the HTML. Missing keys cause a console warning.
 - **`<nav>` / `<ul>` / `<li>`**: navigation block / unordered list / list item. Tailwind removes the default bullets.
 - Keeping labels in an array separates **data** from **layout** and makes translation (ko/en) easy later.
+### Layer 5 — `CharacterSearch` component
+
+**5a Built:** Static search UI: `<h2>`, description, and a `<form>` with an `<input>` and a submit `<button>`. Submitting reloaded the page (the browser's default form behavior).
+
+**5b Built:** Made it interactive. Typing is stored in state, submitting no longer reloads, and the nickname is logged to the browser console. As an exercise I added a `searchedName` state that shows `마지막 검색: ...` after submit.
+
+```text
+Type "DreamHero" → onChange (per keystroke) → setNickname → nickname = "DreamHero"
+Press Enter      → onSubmit → handleSubmit(event)
+                                ├─ event.preventDefault()   → no page reload
+                                ├─ console.log(nickname)
+                                └─ setSearchedName(nickname) → "마지막 검색: DreamHero"
+```
+
+**Learned:**
+- **`<form>` / `<input>` / `<button type="submit">`**: Enter or clicking submits the form. `<input />` must be self-closed in JSX. `placeholder` = gray hint text.
+- **Server vs Client Components:** Components are Server Components by default (browser receives HTML only, no interactivity). `"use client"` at the top of a file also ships its JavaScript to the browser so it can use state and events. Only mark the components that need it. Anything in a Client Component is visible to the user (never put secrets there).
+- **`useState`:** `const [nickname, setNickname] = useState("");` gives a component memory that survives re-renders. Read with `nickname`; change only with `setNickname(...)`, which stores the value **and** tells React to re-render. Hooks (`use...`) only work in Client Components.
+- **Controlled input:** `value={nickname}` + `onChange`. React state is the single source of truth, so React can also *write* to the box (e.g. `setNickname("")` clears it). Without `value`, React can only read.
+- **Events / callbacks:** `onChange={(event) => ...}` hands React a function to call later; React creates the `event` object and passes it in (like tkinter's `bind`). The parameter name is my choice (`event`, `e`, ...). `event.target.value` = the input's text.
+- **`onSubmit={handleSubmit}`** — pass the function, don't call it (`handleSubmit()` would run immediately during render).
+- **`event.preventDefault()`** cancels the browser's default action (the page reload).
+- **Types:** `React.SubmitEvent<HTMLFormElement>` for a form submit event. (`FormEvent` is deprecated in our React types.) `onChange`'s `event` type is inferred automatically.
+- `console.log` output from a Client Component appears in the **browser** console (F12), not the VS Code terminal.
+
+**Noticed for later:**
+- `마지막 검색:` shows even before any search → needs **conditional rendering**.
+- `searchedName` lives inside `CharacterSearch`, but the 캐릭터 정보 / AI 분석 cards will need it too → **lifting state up** (later).
 
 ---
 
 ## Next Step
 
-### Layer 5 — `CharacterSearch` component
+### Layer 6 — `Card` component + empty 캐릭터 정보 card
 
-Split into two small steps:
+`className="border p-4"` is repeated on every section. Build one reusable `Card` that owns the card frame and title, and use it for 캐릭터 정보.
 
-**5a — Static search UI:** `components/CharacterSearch.tsx` with a heading, an `<input>`, and a `<button>` inside a `<form>`.
-- Concepts: `<form>`, `<input>`, `<button>`, and JSX attribute differences (`placeholder`, `type`).
-
-**5b — Make it interactive:** type a nickname, click 분석하기, see it printed in the browser console.
-- Concepts: **Client Components** (`"use client"`), **`useState`** (controlled input), **event handlers** (`onChange`, `onSubmit`).
+**Concepts:**
+1. **Props** — passing data into a component (`<Card title="캐릭터 정보">`) and typing them with TypeScript
+2. **`children`** — passing JSX *inside* a component (like `layout.tsx` does)
+3. **Conditional rendering** — show the empty-state message only when there's no data (also fixes `마지막 검색:`)
 
 **Files:**
 ```text
-frontend/components/CharacterSearch.tsx   ← new
-frontend/app/page.tsx                     ← replace the 캐릭터 검색 section with <CharacterSearch />
+frontend/components/Card.tsx               ← new
+frontend/components/CharacterInfoCard.tsx  ← new
+frontend/app/page.tsx                      ← use <CharacterInfoCard />
 ```
 
-**Expected result:** A search box and button. Submitting logs the nickname to the console. No API yet.
+**Expected result:** The 캐릭터 정보 section looks the same but is built from a reusable `Card`, with a proper `<h2>` title and the empty-state message "캐릭터를 검색하면 정보가 표시됩니다."
