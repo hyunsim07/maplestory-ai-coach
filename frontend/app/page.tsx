@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
+import CharacterSearch from "@/components/CharacterSearch";
 
 export default function Home() {
   return (
@@ -10,7 +11,7 @@ export default function Home() {
         <Sidebar />
 
         <main className="flex flex-1 flex-col gap-4 border p-4">
-          <section className="border p-4">캐릭터 검색</section>
+          <CharacterSearch />
           <section className="border p-4">캐릭터 정보</section>
           <section className="border p-4">주요 장비 미리보기</section>
           <section className="border p-4">What-if 시뮬레이터</section>
