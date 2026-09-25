@@ -13,7 +13,7 @@ export default function Home() {
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex flex-1 flex-col gap-4 border p-4">
+        <main className="flex flex-1 flex-col gap-6 p-6">
           <CharacterSearch />
           <CharacterInfoCard />
           <EquipmentPreviewCard />

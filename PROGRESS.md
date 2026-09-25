@@ -19,8 +19,8 @@ Update this at the end of every layer.
 | 5 | `CharacterSearch` (form UI, then state + events) | ✅ Done |
 | 6 | `Card` component + empty 캐릭터 정보 / AI 분석 cards (props, children, conditional rendering) | ✅ Done |
 | 7 | Remaining empty cards (장비, What-if, AI 코치) | ✅ Done |
-| 8 | Basic Tailwind styling (pastel, rounded, shadows) | ⏭️ Next |
-| 9 | Responsive 2-column grid | ⬜ |
+| 8 | Basic Tailwind styling (pastel, rounded, shadows) | ✅ Done |
+| 9 | Responsive 2-column grid | ⏭️ Next |
 
 Milestone 1 rules: **no** Nexon API, FastAPI, database, LLM, LangGraph, or RAG.
 
@@ -36,14 +36,14 @@ maplestory-ai-coach/
 │   └── frontend.png   ← visual target for the UI
 ├── frontend/          ← Next.js app
 │   ├── app/
-│   │   ├── layout.tsx ← shell around every page (<html>, <body>, metadata)
+│   │   ├── layout.tsx ← shell around every page (<html>, <body>, metadata, font)
 │   │   ├── page.tsx   ← the "/" page
-│   │   └── globals.css← loads Tailwind
+│   │   └── globals.css← loads Tailwind + our maple-* theme colors
 │   ├── components/    ← reusable UI pieces (not routes)
 │   │   ├── Header.tsx
 │   │   ├── Sidebar.tsx
 │   │   ├── CharacterSearch.tsx  ← first Client Component
-│   │   ├── Card.tsx             ← reusable card frame (title + children)
+│   │   ├── Card.tsx             ← reusable card frame (icon + title + children)
 │   │   ├── CharacterInfoCard.tsx
 │   │   ├── EquipmentPreviewCard.tsx
 │   │   ├── WhatIfCard.tsx
@@ -67,6 +67,9 @@ maplestory-ai-coach/
 | UI language | Korean first, translation-friendly structure | i18n (`ko.json` / `en.json`) comes later |
 | Line endings | Skipped `.gitattributes` for now | LF/CRLF warnings are harmless; add it when Docker/other machines arrive |
 | Equipment preview | Added as a 6th placeholder section | It takes a real slot in the final grid layout |
+| Font | Noto Sans KR via `next/font/google` | Clean, round, readable Korean font close to the reference; self-hosted by Next.js |
+| Icons | Emoji for now | Zero setup; later switch to image assets (MapleStory-style) or an icon library (a decision to make together) |
+| Theme colors | `maple-cream`, `maple-orange`, `maple-blue`, `maple-ink` in `@theme` | One place to tune the palette; names describe their role |
 
 ---
 
@@ -239,25 +242,43 @@ page.tsx               CharacterInfoCard.tsx            Card.tsx
 - Semantic heading outline: one `<h1>` (app name) and an `<h2>` per section.
 - `CharacterSearch` intentionally does **not** use `Card`: it's a hero banner with its own look.
 
+### Layer 8 — Tailwind styling
+
+**8a Built:** Replaced the starter theme and dark mode in `globals.css` with our own pastel colors; restyled `Card` (one edit → all five cards became white, rounded, shadowed); removed the scaffolding border from `<main>`.
+
+**8b/8c Built:** Noto Sans KR font; white header with an orange 🍁 logo and a pill language badge; sidebar panel with emoji icons, a highlighted active item, and hover; search hero banner with a golden border, rounded input with a blue focus border, and a blue button with hover. As an exercise I added an `icon` prop to `Card` and passed an icon from every card.
+
+**Learned:**
+- **`@theme` custom colors:** `--color-maple-orange: #ff9a3c;` automatically creates `bg-maple-orange`, `text-maple-orange`, `border-maple-orange`, ... One place to change the palette. Tailwind only outputs CSS for classes actually used.
+- Theme colors are also CSS variables: `background-color: var(--color-maple-cream);` in plain CSS. Text color set on `body` is inherited by everything.
+- **Reading long `className`s:** sort classes into families — shape (`rounded-*`), color (`bg-*`, `text-*`, `border-*`), spacing (`p-*`, `px-*`, `py-*`, `m-*`, `mt-*`, `mb-*`, `gap-*`), text (`text-sm…2xl`, `font-medium/bold/extrabold`), depth (`shadow-sm…xl`), layout (`flex`, `items-center`), state (`hover:`, `focus:`).
+- **Padding vs margin:** padding = space inside the element's edge; margin = space outside, pushing neighbors away.
+- **States:** `hover:bg-blue-600`, `focus:border-maple-blue` — any class can be prefixed. If removing the default focus outline (`outline-none`), always provide a visible replacement focus style.
+- Tailwind palette shades: `50` (palest) → `950` (darkest), e.g. `bg-amber-50`, `border-amber-300`, `text-gray-500`.
+- **Array of objects:** `type NavItem = { icon: string; label: string }`, `const navItems: NavItem[] = [{ icon: "🏠", label: "대시보드" }, ...]`. Read fields with `item.label` (like a Python dict). `key={item.label}`.
+- **Conditional classes:** template string + ternary: `` className={`base classes ${isActive ? "active classes" : "hover:..."}`} ``. Use `===` for equality (not `==`).
+- **`next/font/google`** downloads the font at build time and serves it from our app (no request to Google). Its `className` on `<html>` applies it everywhere.
+- **Emoji** are text characters (Win + `.` opens the picker). They look different per OS and can't be recolored.
+- **`<h2>` is a block element:** anything placed before it ends up on its own line and doesn't get its styles. Put the icon *inside* the heading.
+- **JSX whitespace:** `{icon} {title}` on one line keeps the space; line breaks are not kept as spaces. `flex gap-2` gives precise spacing. React inserts `<!-- -->` between adjacent text values (invisible).
+- Changing a component's required props makes TypeScript flag every place that uses it — a safe way to update all call sites.
+
 ---
 
 ## Next Step
 
-### Layer 8 — Basic Tailwind styling
+### Layer 9 — Responsive 2-column grid (last layer of Milestone 1)
 
-Structure is done; now give it the cute, pastel, rounded MapleStory feel. Still no grid (that's Layer 9).
+Arrange the cards like the reference: the search banner full-width on top, then two columns (left: 캐릭터 정보, 장비, What-if; right: AI 성장 분석, AI 코치). On narrow screens, keep the current single stacked column.
 
 **Concepts:**
-1. **Colors** — Tailwind's color palette (`bg-orange-50`, `text-amber-900`) and defining our own theme colors in `globals.css`
-2. **Card look** — `rounded-2xl`, `shadow-md`, `bg-white`, borders
-3. **Typography** — `text-xl`, `font-bold`, and a Korean-friendly font
+1. **CSS Grid** in Tailwind (`grid`, `grid-cols-2`, `gap-*`)
+2. **Responsive breakpoints** (`md:`, `lg:`) — "mobile first": base classes for phones, prefixed classes for larger screens
+3. A layout-only wrapper `<div>` for each column
 
 **Files:**
 ```text
-frontend/app/globals.css        ← remove starter dark mode, add our color theme
-frontend/app/layout.tsx         ← font
-frontend/components/Card.tsx    ← one edit restyles all five cards
-frontend/components/Header.tsx, Sidebar.tsx, CharacterSearch.tsx
+frontend/app/page.tsx   ← wrap the cards in a grid with two column <div>s
 ```
 
-**Expected result:** A soft pastel page with white rounded cards, clear headings, and a styled search bar. Cards still stacked vertically.
+**Expected result:** On a wide window, a 2-column dashboard similar to the reference. Shrink the window and it collapses back into one column.
