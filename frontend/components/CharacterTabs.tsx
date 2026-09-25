@@ -1,20 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import EmptyState from "@/components/EmptyState";
 
 type Tab = {
-  icon: string;
   label: string;
+  iconSrc: string;
 };
 
 const tabs: Tab[] = [
-  { icon: "🟢", label: "기본 정보" },
-  { icon: "📊", label: "스탯" },
-  { icon: "🪖", label: "장비" },
-  { icon: "⭐", label: "유니온" },
-  { icon: "🔮", label: "헥사" },
-  { icon: "🛡️", label: "보스 이력" },
+  { label: "기본 정보", iconSrc: "/images/icons/slime.png" },
+  { label: "스탯", iconSrc: "/images/icons/whatif.png" },
+  { label: "장비", iconSrc: "/images/icons/equipment.png" },
+  { label: "유니온", iconSrc: "/images/icons/union.png" },
+  { label: "헥사", iconSrc: "/images/icons/hexa.png" },
+  { label: "보스 이력", iconSrc: "/images/icons/boss.png" },
 ];
 
 const basicInfoColumns: string[][] = [
@@ -24,6 +25,7 @@ const basicInfoColumns: string[][] = [
 
 export default function CharacterTabs() {
   const [activeTab, setActiveTab] = useState("기본 정보");
+  const activeIconSrc = tabs.find((tab) => tab.label === activeTab)?.iconSrc;
 
   return (
     <div className="mt-6">
@@ -41,7 +43,7 @@ export default function CharacterTabs() {
                 : "border-transparent text-gray-500 hover:text-maple-ink"
             }`}
           >
-            <span>{tab.icon}</span>
+            <Image src={tab.iconSrc} alt="" width={20} height={20} />
             <span>{tab.label}</span>
           </button>
         ))}
@@ -66,7 +68,9 @@ export default function CharacterTabs() {
           </div>
         ) : (
           <EmptyState
-            icon={tabs.find((tab) => tab.label === activeTab)?.icon ?? "📋"}
+            icon={
+              activeIconSrc && <Image src={activeIconSrc} alt="" width={56} height={56} />
+            }
             message={`캐릭터를 검색하면\n${activeTab} 정보가 표시됩니다.`}
           />
         )}

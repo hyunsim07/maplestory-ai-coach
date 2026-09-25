@@ -1,17 +1,18 @@
+import Image from "next/image";
 import Card from "@/components/Card";
 import CharacterTabs from "@/components/CharacterTabs";
 import Mushroom from "@/components/Mushroom";
 
 type StatBadge = {
-  icon: string;
+  iconSrc: string;
   label: string;
 };
 
 const statBadges: StatBadge[] = [
-  { icon: "⚔️", label: "전투력" },
-  { icon: "👥", label: "유니온" },
-  { icon: "🔮", label: "헥사 레벨" },
-  { icon: "❤️", label: "인기도" },
+  { iconSrc: "/images/icons/stat-power.png", label: "전투력" },
+  { iconSrc: "/images/icons/stat-union.png", label: "유니온" },
+  { iconSrc: "/images/icons/stat-hexa.png", label: "헥사 레벨" },
+  { iconSrc: "/images/icons/stat-popularity.png", label: "인기도" },
 ];
 
 export default function CharacterInfoCard() {
@@ -19,7 +20,7 @@ export default function CharacterInfoCard() {
     <Card title="캐릭터 정보" icon={<Mushroom size={32} />}>
       <div className="flex flex-col gap-5 sm:flex-row">
         <div className="flex h-44 w-full shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 text-center sm:w-44">
-          <span className="text-5xl opacity-30">👤</span>
+          <Image src="/images/icons/character-placeholder.png" alt="" width={72} height={72} />
           <p className="text-sm text-gray-500">
             캐릭터를 검색하면
             <br />
@@ -39,7 +40,7 @@ export default function CharacterInfoCard() {
                 key={badge.label}
                 className="flex flex-col items-center gap-1 rounded-2xl border border-gray-100 py-3 shadow-sm"
               >
-                <span className="text-xl">{badge.icon}</span>
+                <Image src={badge.iconSrc} alt="" width={30} height={30} />
                 <span className="text-xs text-gray-500">{badge.label}</span>
                 <span className="font-bold">-</span>
               </li>

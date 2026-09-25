@@ -1,14 +1,15 @@
+import Image from "next/image";
 import Mushroom from "@/components/Mushroom";
 
 type HeaderLink = {
-  icon: string;
   label: string;
+  iconSrc: string;
 };
 
 const headerLinks: HeaderLink[] = [
-  { icon: "🏠", label: "홈" },
-  { icon: "📖", label: "가이드" },
-  { icon: "❓", label: "자주 묻는 질문" },
+  { label: "홈", iconSrc: "/images/icons/dashboard.png" },
+  { label: "가이드", iconSrc: "/images/icons/knowledge.png" },
+  { label: "자주 묻는 질문", iconSrc: "/images/icons/question.png" },
 ];
 
 const activeLink = "홈";
@@ -20,7 +21,7 @@ export default function Header() {
   return (
     <header className="flex items-center justify-between gap-4 px-6 pt-5 pb-1">
       <h1 className="flex h-16 items-center gap-3 rounded-3xl bg-white/85 px-5 text-xl leading-tight font-extrabold shadow-md ring-1 ring-white backdrop-blur">
-        <span className="text-3xl">🍁</span>
+        <Image src="/images/icons/logo.png" alt="" width={40} height={40} />
         <span>
           <span className="block text-maple-orange">MapleStory</span>
           <span className="block text-maple-ink">AI Coach</span>
@@ -39,7 +40,7 @@ export default function Header() {
                   : "text-gray-600 hover:bg-blue-50 hover:text-maple-blue"
               }`}
             >
-              <span className="text-base">{link.icon}</span>
+              <Image src={link.iconSrc} alt="" width={22} height={22} />
               <span>{link.label}</span>
             </a>
           ))}

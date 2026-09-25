@@ -343,6 +343,15 @@ I asked Claude to build this milestone for me: CSS/Tailwind detail isn't where I
 - New `components/Mushroom.tsx` wraps `<Image>` with a `size` prop and keeps the aspect ratio (`height = size × 619/693`). Used in 5 places: header avatar, 캐릭터 정보 icon, search banner corner, sidebar speech bubble, AI 성장 분석 empty state. One component = change the image once, it updates everywhere.
 - `EmptyState`'s `icon` widened to `React.ReactNode` (same trick as `Card`).
 - Sidebar icons: cut the 10 icons out of the `sidebaricons.png` sheet into `public/images/icons/*.png` (each trimmed, centered on a square, resized to 128×128, ~20–30 KB). `NavItem.icon` (emoji) became `NavItem.iconSrc` (a file path), rendered with `<Image width={28} height={28} />`.
+- 캐릭터 정보 stat badges: 4 icons cut from `charactericons.png` → `icons/stat-power.png`, `stat-union.png`, `stat-hexa.png`, `stat-popularity.png`.
+- `CharacterTabs` reuses sidebar icons (스탯 → `whatif.png`, 장비 → `equipment.png`, 유니온 → `union.png`, 헥사 → `hexa.png`, 보스 이력 → `boss.png`) and 기본 정보 → `slime.png`. Every tab now has an image, so `iconSrc` is required again (the temporary emoji-fallback helper was removed).
+- Header logo 🍁 → `icons/logo.png`; nav 홈 → `dashboard.png`, 가이드 → `knowledge.png`, 자주 묻는 질문 → `question.png` (the temporary emoji fallback was removed once every link had an image).
+- Lightbulb 💡 → sidebar `ai.png` in the AI 성장 분석 card title and the search banner's "지금 바로" bubble.
+- AI 코치 채팅: card title and empty-state icons → `icons/chat.png` (256px); send button ➤ → `icons/chatsend.png` (paper airplane).
+- Removed the 🌸 decoration from the search banner's top-left corner. ✨ on "제공 예정 기능" stays by choice.
+- What-if empty state 📈 → `icons/simulation.png`; search banner title 🍁 → `icons/logo.png`; 분석하기 button 🔍 → `icons/search.png`.
+- 캐릭터 정보 portrait placeholder 👤 → `icons/character-placeholder.png`; What-if card icon → `whatif.png` (its empty-state 📈 stays until a new icon arrives).
+- New source images (`logo.png`, `character.png`, `slime.png`, 1254×1254) were trimmed and resized to 256/256/128px copies in `icons/`.
 - Header: the right side is now one frosted bar the same height as the logo (`h-16`): nav links with a solid blue active pill, a divider, a 한국어 | EN segmented toggle (from an array + active value, same pattern as the sidebar), and the mushroom avatar.
 
 ---
